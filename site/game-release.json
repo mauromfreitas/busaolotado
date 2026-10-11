@@ -3,7 +3,7 @@
   "engineVersion": "4.7.2.stable.official.ed1daf0bf",
   "inputs": {
     "objectFormat": "sha1",
-    "tree": "e4e91bd9be725af2676bd2980da374c60a7d1c84",
+    "tree": "bd25560ddfac7fc33a3e6747a7ebf760b115c10d",
     "entries": [
       {
         "path": ".gitignore",
@@ -1115,6 +1115,174 @@
         "object": "50873352ff19cc16faea3d2a0d33e0e7736f407e"
       },
       {
+        "path": "data/audio/board.wav",
+        "type": "file",
+        "mode": "100644",
+        "object": "fc49b67acc543fd4d8f02bd20b21751da3b6991c"
+      },
+      {
+        "path": "data/audio/board.wav.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "99723d85e97b8bee77ed3690981f665a81e34850"
+      },
+      {
+        "path": "data/audio/bump.wav",
+        "type": "file",
+        "mode": "100644",
+        "object": "6fb038669e404b18f396796997a40b468bf772c5"
+      },
+      {
+        "path": "data/audio/bump.wav.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "9d9f001c0a4508bb3efb01c3571f8fe1ae31ac06"
+      },
+      {
+        "path": "data/audio/depart.wav",
+        "type": "file",
+        "mode": "100644",
+        "object": "78093af243014d9ed1dc5d11117198f0a03602b1"
+      },
+      {
+        "path": "data/audio/depart.wav.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "547b7028a72f625e170874aa66a77734a80dca53"
+      },
+      {
+        "path": "data/audio/tap.wav",
+        "type": "file",
+        "mode": "100644",
+        "object": "8ec1b0c0e0b4c4a5a35301c59199aebadab3b118"
+      },
+      {
+        "path": "data/audio/tap.wav.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "e029bc12f859e83bf57bb01ff53b1feb3725dd8c"
+      },
+      {
+        "path": "data/audio/win.wav",
+        "type": "file",
+        "mode": "100644",
+        "object": "df39ac17911f8d3107c2815a16d9a3aba6e81a5b"
+      },
+      {
+        "path": "data/audio/win.wav.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "11a89f679d429ded76998a76e903fff1295a4ff5"
+      },
+      {
+        "path": "data/icons/account.svg",
+        "type": "file",
+        "mode": "100644",
+        "object": "a58fb0563b8cd49a1fed7ac2d854a1acc74120df"
+      },
+      {
+        "path": "data/icons/account.svg.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "1d465dbbf2156c221e8e0761a4fc2e805d4d3127"
+      },
+      {
+        "path": "data/icons/bay.svg",
+        "type": "file",
+        "mode": "100644",
+        "object": "704ca836a272c5c7a64242e74b8d1632125a840a"
+      },
+      {
+        "path": "data/icons/bay.svg.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "5c96bb3de16456692bd2db5c0650fd7e9fb07088"
+      },
+      {
+        "path": "data/icons/daily.svg",
+        "type": "file",
+        "mode": "100644",
+        "object": "5013d678351471683554e7905ebb8be0ddd6570f"
+      },
+      {
+        "path": "data/icons/daily.svg.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "9ceef0e3c8d9fd7d4418ddaa37bbb18367ea09cf"
+      },
+      {
+        "path": "data/icons/map.svg",
+        "type": "file",
+        "mode": "100644",
+        "object": "0faed141a941ef27cf61087da4fcbac55047c47c"
+      },
+      {
+        "path": "data/icons/map.svg.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "75c7763a48e1f0f6280ddae27e872477d444bdba"
+      },
+      {
+        "path": "data/icons/play.svg",
+        "type": "file",
+        "mode": "100644",
+        "object": "85b0d48c863ec822db70738a30a3ae31e7ac40bd"
+      },
+      {
+        "path": "data/icons/play.svg.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "eb4c36b393e0309b8f20b92c54091aae465d0ef9"
+      },
+      {
+        "path": "data/icons/settings.svg",
+        "type": "file",
+        "mode": "100644",
+        "object": "0d736f7bccd469336705ce2499d874bc4221770f"
+      },
+      {
+        "path": "data/icons/settings.svg.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "6da815f11aa86bee0f19871d7638ac96890f8c9c"
+      },
+      {
+        "path": "data/icons/shuffle.svg",
+        "type": "file",
+        "mode": "100644",
+        "object": "d9a39583ea5a6f1198079bab96fe0c106a8b936a"
+      },
+      {
+        "path": "data/icons/shuffle.svg.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "e2e8780c3edba4eb295c6f74647dd2d2baa7da0a"
+      },
+      {
+        "path": "data/icons/store.svg",
+        "type": "file",
+        "mode": "100644",
+        "object": "7a0424bad4bd73781fdccd3ff78ef2530660f7fa"
+      },
+      {
+        "path": "data/icons/store.svg.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "cbb543cd91d9cba9f48195d94d074a12a67cc467"
+      },
+      {
+        "path": "data/icons/tow.svg",
+        "type": "file",
+        "mode": "100644",
+        "object": "9008e24d5e6248be7640c7e50fc8846693339bbe"
+      },
+      {
+        "path": "data/icons/tow.svg.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "4836bf90469df03a1bc0c1ab7f8dcd7a71e19990"
+      },
+      {
         "path": "data/levels/levels.json",
         "type": "file",
         "mode": "100644",
@@ -1238,7 +1406,7 @@
         "path": "scripts/busaolotado_main.gd",
         "type": "file",
         "mode": "100644",
-        "object": "c9c6ce823b884f2eb1ba93a73a4102f309a8057f"
+        "object": "f26e15c7d13b29bdaa8aa4e618f2148990df271e"
       },
       {
         "path": "scripts/busaolotado_main.gd.uid",
@@ -2351,6 +2519,12 @@
         "object": "3e3897a340b249e5765de9c3b79b31fab819838a"
       },
       {
+        "path": "tools/retheme.py",
+        "type": "file",
+        "mode": "100644",
+        "object": "55e13b964cd1efafd94586bc3f7a31002af08ab1"
+      },
+      {
         "path": "tools/serve.py",
         "type": "file",
         "mode": "100644",
@@ -2366,7 +2540,7 @@
         "path": "tools/test_loop.gd",
         "type": "file",
         "mode": "100644",
-        "object": "5a76d1f296a22cd2649666462556507e112496b1"
+        "object": "43b89dd3e9a0dd383f04c567bb82dfca5a1a57ef"
       },
       {
         "path": "tools/test_loop.gd.uid",
@@ -2467,7 +2641,7 @@
     ]
   },
   "build": {
-    "snapshotId": "sha256:6a2e1b1ef7fc72d0e7570ae5cda5a27a016cdc67bac2a3542971d30c0d25e0ca",
+    "snapshotId": "sha256:4a81fe2fd65694839b7a37fcdc1192fcb6c2a081a2dead653a5d5491f9aff5de",
     "toolchain": {
       "engineVersion": "4.7.2.stable.official.ed1daf0bf",
       "engineDigest": "sha256:8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
@@ -2480,7 +2654,7 @@
     "profile": "release",
     "export": {
       "profile": "release",
-      "snapshotId": "sha256:6a2e1b1ef7fc72d0e7570ae5cda5a27a016cdc67bac2a3542971d30c0d25e0ca",
+      "snapshotId": "sha256:4a81fe2fd65694839b7a37fcdc1192fcb6c2a081a2dead653a5d5491f9aff5de",
       "files": {
         "THIRD_PARTY_NOTICES.txt": "sha256:5a9ad06f17b004e6413bf90a5362201c0e61bcb6a615b9a852f36e5dfd7b90e4",
         "index.144x144.png": "sha256:89c29e208ee44545fff24251b932a34d5b964cb181bed40a78b55e259507d089",
@@ -2489,18 +2663,18 @@
         "index.apple-touch-icon.png": "sha256:853f4cdc628eef4ff1dad084a011565f7325873b745e7707533c5e4046c059e8",
         "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
         "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-        "index.html": "sha256:d124dada12f0a77d857b56faf4e37b2c0964913127dcc8ed100f8e38bf51aacc",
+        "index.html": "sha256:636f8ccf354fef9da485a87b5a5f4679f724e0dbe976466f33ee0f4ec6efe9b5",
         "index.icon.png": "sha256:a72fa8f228fedb1f6c26a3d752a57e74818029806d8c957aae859727a637d99d",
         "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
         "index.manifest.json": "sha256:5d6d4093a6015e640dfd354f581aa4bc6f12d8e50ea65e8cccca809e2bd6107e",
         "index.offline.html": "sha256:b0a5d443e78f58717adac780bac91c1431bfa3b801c41f4707d507fb5ad2e47f",
-        "index.pck": "sha256:dabb22e248f4f18b4c7838c71aaccc0b6b3574311cf77d1a7cfe23a2d381ad24",
+        "index.pck": "sha256:5de25f00d6186eecf8b857c74d665e603bbeb78170b0c5247f9fd5986db0287d",
         "index.png": "sha256:dc78cf86c906c5c17a7829b9ed6e635f2abe1b66c2a4a80979a02a65f739baa0",
-        "index.service.worker.js": "sha256:35b82a250b110b036281013674536ad1e50cc5cca8e7373858462fae3ca10f3e",
+        "index.service.worker.js": "sha256:36bf8d81616b6157f603bba2e4a4b673b096af72002b41446a064f5418efb30b",
         "index.wasm": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0",
         "open-source-licenses.html": "sha256:68be5e4c66116c05fbe449a8e7f4e6896d6b6bb92faee49b53635d3a12241ebb"
       },
-      "digest": "sha256:b8a867fe1204f8c754412f94ed878dd25d18579aa0d05f2aeb480bceeb25312c"
+      "digest": "sha256:c46b0b5a79159e43fc1d77cfd8652f80e44d2006644130b12e2ff34c5a107231"
     }
   },
   "artifacts": {
@@ -2509,8 +2683,8 @@
       "sha256": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
     },
     "pck": {
-      "path": "/manus-storage/game/sha256/dabb22e248f4f18b4c7838c71aaccc0b6b3574311cf77d1a7cfe23a2d381ad24.pck",
-      "sha256": "sha256:dabb22e248f4f18b4c7838c71aaccc0b6b3574311cf77d1a7cfe23a2d381ad24"
+      "path": "/manus-storage/game/sha256/5de25f00d6186eecf8b857c74d665e603bbeb78170b0c5247f9fd5986db0287d.pck",
+      "sha256": "sha256:5de25f00d6186eecf8b857c74d665e603bbeb78170b0c5247f9fd5986db0287d"
     }
   },
   "files": {
@@ -2522,13 +2696,13 @@
     "index.apple-touch-icon.png": "sha256:853f4cdc628eef4ff1dad084a011565f7325873b745e7707533c5e4046c059e8",
     "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
     "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-    "index.html": "sha256:2a8d83c77141d7be37416632203a9cf38ab62b6e4d97f80c80f2287355c7ebb9",
+    "index.html": "sha256:1226284da8fd8af6a937e1b839737b4599b4887e54d05a38e5d72cf7eaf80c27",
     "index.icon.png": "sha256:a72fa8f228fedb1f6c26a3d752a57e74818029806d8c957aae859727a637d99d",
     "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
     "index.manifest.json": "sha256:5d6d4093a6015e640dfd354f581aa4bc6f12d8e50ea65e8cccca809e2bd6107e",
     "index.offline.html": "sha256:b0a5d443e78f58717adac780bac91c1431bfa3b801c41f4707d507fb5ad2e47f",
     "index.png": "sha256:dc78cf86c906c5c17a7829b9ed6e635f2abe1b66c2a4a80979a02a65f739baa0",
-    "index.service.worker.js": "sha256:35b82a250b110b036281013674536ad1e50cc5cca8e7373858462fae3ca10f3e",
+    "index.service.worker.js": "sha256:36bf8d81616b6157f603bba2e4a4b673b096af72002b41446a064f5418efb30b",
     "open-source-licenses.html": "sha256:68be5e4c66116c05fbe449a8e7f4e6896d6b6bb92faee49b53635d3a12241ebb",
     "share/50b9e3238b4ce8becd44a5ce13927aeaf3b74bdf7c68abe005b4dfed86d89182.png": "sha256:50b9e3238b4ce8becd44a5ce13927aeaf3b74bdf7c68abe005b4dfed86d89182"
   }

@@ -18,6 +18,7 @@ func _init() -> void:
             if chosen < 0:
                 break
             game._try_send_bus(chosen)
+            await create_timer(0.34).timeout
             taps += 1
         if game.screen != "result" or game.queue.size() != 0:
             failures.append(level_id)

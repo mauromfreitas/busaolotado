@@ -52,14 +52,27 @@ var last_result_coins := 0
 var daily_mode := false
 var debug_taps := 0
 var font: Font
+var icon_textures: Dictionary = {}
+var sfx_streams: Dictionary = {}
+var motion_bus: Dictionary = {}
+var motion_elapsed := 0.0
+var motion_start := Vector2.ZERO
+var motion_target := Vector2.ZERO
+var motion_index := -1
+var motion_ignore_path := false
+var boarding_time := 0.0
+var confetti: Array = []
 
 var color_names := ["coral", "azul", "amarelo", "roxo", "verde", "laranja"]
 var color_values := [RED, BLUE, YELLOW, PURPLE, GREEN, ORANGE]
-var color_symbols := ["●", "▲", "◆", "✦", "■", "✚"]
 
 func _ready() -> void:
     font = ThemeDB.fallback_font
     get_viewport().size_changed.connect(queue_redraw)
+    for icon_name in ["map", "daily", "store", "settings", "account", "bay", "shuffle", "tow", "play"]:
+        icon_textures[icon_name] = load("res://data/icons/%s.svg" % icon_name)
+    for sound_name in ["tap", "bump", "board", "depart", "win"]:
+        sfx_streams[sound_name] = load("res://data/audio/%s.wav" % sound_name)
     _load_levels()
     _load_progress()
     queue_redraw()
@@ -69,11 +82,30 @@ func _process(delta: float) -> void:
         level_elapsed += delta
     if toast_time > 0.0:
         toast_time -= delta
-        queue_redraw()
     if shake_time > 0.0:
         shake_time -= delta
-        queue_redraw()
+    if boarding_time > 0.0:
+        boarding_time -= delta
+    if motion_elapsed > 0.0:
+        motion_elapsed += delta
+        if motion_elapsed >= 0.25:
+            _complete_send_bus()
+    if not confetti.is_empty():
+        for bit in confetti:
+            bit["t"] = float(bit["t"]) + delta
+            bit["y"] = float(bit["y"]) + 120.0 * delta
+        confetti = confetti.filter(func(bit): return float(bit["t"]) < 1.8)
+    queue_redraw()
 
+func _play_sfx(name: String) -> void:
+    if DisplayServer.get_name() == "headless" or not bool(progress.get("sound", true)) or not sfx_streams.has(name):
+        return
+    var player := AudioStreamPlayer.new()
+    player.stream = sfx_streams[name]
+    player.volume_db = -8.0
+    add_child(player)
+    player.finished.connect(player.queue_free)
+    player.play()
 func _input(event: InputEvent) -> void:
     if event is InputEventScreenTouch and event.pressed:
         _handle_tap(_to_logical(event.position))
@@ -161,13 +193,41 @@ func _draw() -> void:
         _center(toast, 30, 785, 330, 14, CREAM)
 
 func _draw_brand(x := 24.0, y := 44.0) -> void:
+    # Original bus mark: a compact roof, windshield and two wheels.
+    draw_circle(_ui(Vector2(x + 10, y + 11)), 5.5 * _viewport_scale(), Color("#071A23"))
+    draw_circle(_ui(Vector2(x + 32, y + 11)), 5.5 * _viewport_scale(), Color("#071A23"))
     _fill(_rect(x, y - 21, 42, 28), CORAL)
     _fill(_rect(x + 6, y - 28, 30, 8), SUN)
-    draw_circle(_ui(Vector2(x + 10, y + 11)), 5.5 * _viewport_scale(), BG)
-    draw_circle(_ui(Vector2(x + 32, y + 11)), 5.5 * _viewport_scale(), BG)
+    _fill(_rect(x + 6, y - 15, 30, 11), Color("#BCEAF0"))
     _text("BUSÃO", x + 52, y + 2, 28, CREAM)
     _text("LOTADO", x + 52, y + 25, 13, SUN)
 
+func _icon(name: String, x: float, y: float, size: float, tint := CREAM) -> void:
+    var texture = icon_textures.get(name)
+    if texture != null:
+        draw_texture_rect(texture, _rect(x, y, size, size), false, tint)
+
+func _draw_star(center: Vector2, radius: float, color: Color) -> void:
+    var points := PackedVector2Array()
+    for i in range(10):
+        var r := radius if i % 2 == 0 else radius * 0.45
+        var angle := -PI / 2.0 + float(i) * PI / 5.0
+        points.append(_ui(center + Vector2(cos(angle), sin(angle)) * r))
+    draw_colored_polygon(points, color)
+
+func _draw_person(x: float, y: float, color: Color, scale := 1.0, bounce := 0.0) -> void:
+    var yy := y - bounce
+    draw_circle(_ui(Vector2(x, yy - 9 * scale)), 6.0 * scale * _viewport_scale(), Color("#FFE0B2"))
+    _fill(_rect(x - 6 * scale, yy - 3 * scale, 12 * scale, 13 * scale), color)
+    draw_line(_ui(Vector2(x - 4 * scale, yy + 10 * scale)), _ui(Vector2(x - 4 * scale, yy + 16 * scale)), Color("#071A23"), 2.0 * _viewport_scale())
+    draw_line(_ui(Vector2(x + 4 * scale, yy + 10 * scale)), _ui(Vector2(x + 4 * scale, yy + 16 * scale)), Color("#071A23"), 2.0 * _viewport_scale())
+
+func _draw_hand_pointer(x: float, y: float, pulse: float) -> void:
+    var bob := sin(Time.get_ticks_msec() / 220.0) * 4.0
+    draw_circle(_ui(Vector2(x, y + bob)), 15 * _viewport_scale(), Color(1, 0.82, 0.3, 0.16 + pulse * 0.12))
+    draw_circle(_ui(Vector2(x + 1, y - 2 + bob)), 8 * _viewport_scale(), CREAM)
+    draw_line(_ui(Vector2(x + 1, y - 4 + bob)), _ui(Vector2(x + 1, y - 20 + bob)), CREAM, 5 * _viewport_scale())
+    draw_line(_ui(Vector2(x - 7, y + 1 + bob)), _ui(Vector2(x - 13, y + 8 + bob)), CREAM, 5 * _viewport_scale())
 func _draw_coin_pill(x: float, y: float) -> void:
     _rounded_panel(x, y, 112, 38, PANEL_2, Color("#2B6573"))
     draw_circle(_ui(Vector2(x + 20, y + 19)), 9 * _viewport_scale(), SUN)
@@ -181,29 +241,39 @@ func _draw_button(x: float, y: float, w: float, h: float, label: String, fill :=
 func _draw_home() -> void:
     _draw_brand(24, 64)
     _draw_coin_pill(254, 27)
-    _text("PUZZLE DE TRÂNSITO • 30 FASES", 26, 128, 12, MINT)
-    _text("Organize a rua.", 24, 182, 31, CREAM)
-    _text("Libere o embarque.", 24, 218, 31, SUN)
-    _rounded_panel(24, 248, 342, 142, PANEL, Color("#1C5666"))
-    _text("COMO JOGAR", 44, 281, 13, MINT)
-    _text("Toque em um ônibus livre para enviá-lo", 44, 310, 15, CREAM)
-    _text("à vaga. Passageiros da mesma cor sobem", 44, 332, 15, CREAM)
-    _text("sozinhos. Esvazie a fila para vencer.", 44, 354, 15, CREAM)
-    _draw_button(24, 418, 342, 64, "JOGAR AGORA  →", CORAL, BG)
-    _draw_button(24, 494, 164, 54, "MAPA", PANEL_2, CREAM, Color("#2B6573"), 16)
-    _draw_button(202, 494, 164, 54, "DESAFIO DO DIA", PANEL_2, CREAM, Color("#2B6573"), 13)
-    _draw_button(24, 565, 106, 48, "LOJA", PANEL_2, CREAM, Color("#2B6573"), 14)
-    _draw_button(142, 565, 106, 48, "AJUSTES", PANEL_2, CREAM, Color("#2B6573"), 14)
-    _draw_button(260, 565, 106, 48, "ENTRAR", Color("#123F50"), MINT, Color("#2B6573"), 14)
-    _rounded_panel(24, 650, 342, 76, Color("#0D2E3B"))
-    _text("PROGRESSO LOCAL", 42, 679, 12, MUTED)
-    _text("Convidado • nível %02d / 30" % int(progress["unlocked"]), 42, 706, 15, CREAM)
-    _text("v0.1 protótipo", 276, 706, 11, MUTED)
+    _text("PUZZLE DE TRÂNSITO | 30 FASES", 26, 128, 12, MINT)
+    _text("Desembarace a rua.", 24, 182, 31, CREAM)
+    _text("Faça a fila fluir.", 24, 218, 31, SUN)
+    # Small street illustration instead of an instruction panel.
+    _rounded_panel(24, 246, 342, 142, Color("#68757C"), Color("#A5B2B2"))
+    draw_line(_ui(Vector2(24, 282)), _ui(Vector2(366, 282)), Color("#FFFFFF"), 4 * _viewport_scale())
+    draw_line(_ui(Vector2(24, 348)), _ui(Vector2(366, 348)), Color("#FFFFFF"), 4 * _viewport_scale())
+    for lane_x in [82.0, 176.0, 270.0]:
+        draw_line(_ui(Vector2(lane_x, 304)), _ui(Vector2(lane_x + 28, 304)), Color("#F8D36D"), 3 * _viewport_scale())
+    var demo_bus := {"color":"coral", "size":3, "dir":"right", "x":0, "y":0, "revealed":true}
+    _draw_bus_shape(demo_bus, 52, 264, 118, 38, CORAL)
+    _draw_person(256, 330, BLUE, 0.9)
+    _draw_person(286, 330, YELLOW, 0.9)
+    _draw_person(316, 330, PURPLE, 0.9)
+    _draw_button(24, 418, 342, 64, "JOGAR", CORAL, BG)
+    _icon("play", 316, 435, 24, BG)
+    _icon_button(24, 494, 76, "map", "MAPA")
+    _icon_button(112, 494, 76, "daily", "DIA")
+    _icon_button(200, 494, 76, "store", "LOJA")
+    _icon_button(288, 494, 78, "settings", "AJUSTES")
+    _icon_button(24, 578, 76, "account", "ENTRAR")
+    _rounded_panel(112, 578, 254, 58, Color("#0D2E3B"))
+    _text("Convidado", 132, 603, 14, CREAM)
+    _text("nível %02d / 30" % int(progress["unlocked"]), 132, 623, 12, MUTED)
 
+func _icon_button(x: float, y: float, w: float, icon_name: String, label: String) -> void:
+    _rounded_panel(x, y, w, 68, PANEL_2, Color("#2B6573"))
+    _icon(icon_name, x + (w - 26) * 0.5, y + 8, 26, CREAM)
+    _center(label, x, y + 57, w, 10, MUTED)
 func _draw_map() -> void:
     _top_bar("MAPA DE LINHAS", true)
-    _center("Escolha uma fase", 24, 101, 342, 20, CREAM)
-    _center("Cada nó é uma rua para desembaraçar", 24, 124, 342, 12, MUTED)
+    _center("Escolha uma rua", 24, 101, 342, 20, CREAM)
+    _center("Desbloqueie novos trajetos", 24, 124, 342, 12, MUTED)
     var start := Vector2(68, 166)
     var step_y := 57.0
     for i in range(30):
@@ -224,72 +294,78 @@ func _draw_map() -> void:
         draw_circle(_ui(Vector2(x, y)), radius * _viewport_scale(), node_color)
         if level_no == current_level and unlocked:
             draw_arc(_ui(Vector2(x, y)), (radius + 5) * _viewport_scale(), 0, TAU, 32, SUN, 2.0 * _viewport_scale())
-        if level_no % 10 == 0:
-            _center("★", x - 16, y + 6, 32, 15, SUN if unlocked else Color("#54737A"))
+        if level_no % 10 == 0 and unlocked:
+            _draw_star(Vector2(x, y), 10, SUN)
         elif unlocked:
-            _center(str(level_no), x - 17, y + 6, 34, 13, BG if node_color == MINT else CREAM)
+            _center(str(level_no), x - 17, y + 5, 34, 13, BG if node_color == MINT else CREAM)
         else:
-            _center("×", x - 17, y + 6, 34, 16, Color("#719198"))
-    _text("★ fases difíceis", 24, 770, 12, SUN)
-    _text("● concluída", 157, 770, 12, MINT)
-    _text("× bloqueada", 265, 770, 12, MUTED)
+            _draw_lock(Vector2(x, y), 8, Color("#719198"))
 
+func _draw_lock(center: Vector2, size: float, color: Color) -> void:
+    _outline(_rect(center.x - size, center.y - 1, size * 2, size * 1.5), color, 2.0)
+    draw_arc(_ui(center + Vector2(0, -2)), size * 0.75 * _viewport_scale(), PI, TAU, 16, color, 2 * _viewport_scale())
 func _top_bar(title: String, back := false) -> void:
     if back:
-        _draw_button(18, 18, 48, 42, "‹", PANEL_2, CREAM, Color("#2B6573"), 28)
+        _draw_button(18, 18, 48, 42, "VOLTAR", PANEL_2, CREAM, Color("#2B6573"), 9)
     _text(title, 78 if back else 24, 45, 18, CREAM)
     _draw_coin_pill(254, 20)
-
 func _draw_game() -> void:
-    _top_bar("FASE %02d" % current_level, true)
-    _text("DIFICULDADE: " + ("DIFÍCIL" if _current_is_hard() else "CALMA"), 24, 77, 11, SUN if _current_is_hard() else MINT)
-    _text("VAGAS", 22, 103, 11, MUTED)
+    _top_bar("RUA %02d" % current_level, true)
+    _text("DIFÍCIL" if _current_is_hard() else "CALMA", 24, 77, 11, SUN if _current_is_hard() else MINT)
     for i in range(slot_count):
         var x := 22.0 + float(i) * (346.0 / float(max(slot_count, 1)))
         var w := 58.0 if slot_count <= 5 else 49.0
-        _rounded_panel(x, 112, w, 54, Color("#0C2C38"), Color("#2D6675"))
+        _draw_bay(x, 100, w, 64, i < parked.size())
         if i < parked.size():
-            _draw_parked_bus(parked[i], x, 112, w, 54)
-        else:
-            _center("+", x, 147, w, 22, Color("#356B76"))
-    _text("FILA • PRÓXIMOS 8", 22, 193, 11, MUTED)
-    _rounded_panel(22, 205, 346, 42, Color("#0D2E3B"), Color("#24596A"))
+            _draw_parked_bus(parked[i], x, 100, w, 64)
+    # Sidewalk queue: people, not dots.
+    _rounded_panel(22, 185, 346, 62, Color("#C9C1B4"), Color("#F4E8D6"))
+    draw_line(_ui(Vector2(30, 238)), _ui(Vector2(360, 238)), Color("#A39A8D"), 2 * _viewport_scale())
     var shown: int = mini(8, queue.size())
     for i in range(shown):
-        var qx := 38.0 + float(i) * 40.0
+        var qx := 44.0 + float(i) * 39.0
         var c := _color_for_name(str(queue[i]))
-        draw_circle(_ui(Vector2(qx, 226)), 12 * _viewport_scale(), c)
-        _center(_symbol_for_name(str(queue[i])), qx - 12, 231, 24, 11, BG)
-        if i == 0:
-            draw_arc(_ui(Vector2(qx, 226)), 17 * _viewport_scale(), 0, TAU, 20, CREAM, 2 * _viewport_scale())
+        var bounce := 0.0
+        if i == 0 and boarding_time > 0.0:
+            bounce = sin((0.28 - boarding_time) * 28.0) * 7.0
+        _draw_person(qx, 226, c, 0.85, bounce)
     if queue.is_empty():
-        _center("fila vazia", 22, 232, 346, 12, MINT)
+        _center("rua vazia", 22, 221, 346, 12, Color("#4A676C"))
     _draw_board()
     _draw_powerups()
-    if current_level <= 3:
+    if current_level <= 3 and not buses.is_empty() and motion_elapsed <= 0.0:
         var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 260.0)
-        _rounded_panel(39, 666, 312, 32, Color(0.07, 0.24, 0.29, 0.92))
-        _center("TOQUE EM UM ÔNIBUS LIVRE  ↓", 39, 688, 312, 13, Color(1, 0.83, 0.42, 0.7 + pulse * 0.3))
+        var target: Dictionary = buses[0]
+        var cell := _cell_size()
+        _draw_hand_pointer(22.0 + float(target["x"]) * cell + cell * 0.5, 316.0 + float(target["y"]) * cell + cell * 0.5, pulse)
     if tow_mode:
         _rounded_panel(21, 250, 348, 410, Color(0.4, 0.18, 0.12, 0.08), CORAL)
-        _center("ESCOLHA UM ÔNIBUS PARA O GUINCHO", 21, 274, 348, 12, CORAL)
-
+        _center("ESCOLHA UM ÔNIBUS", 21, 274, 348, 12, CORAL)
 func _draw_board() -> void:
     var cell := _cell_size()
     var ox := 22.0
     var oy := 316.0
-    _rounded_panel(18, 278, 354, 372, Color("#0B2A36"), Color("#1D5362"))
-    _text("ESTACIONAMENTO", 30, 302, 11, MUTED)
-    for y in range(grid_h):
-        for x in range(grid_w):
-            _outline(_rect(ox + x * cell, oy + y * cell, cell - 2, cell - 2), GRID_LINE, 1.0)
+    # Asphalt lot with curb, lane marks and no visible logic grid.
+    _rounded_panel(18, 278, 354, 372, Color("#5B666B"), Color("#B6C0BC"))
+    draw_line(_ui(Vector2(24, 310)), _ui(Vector2(366, 310)), Color("#EDE9DF"), 3 * _viewport_scale())
+    draw_line(_ui(Vector2(24, 645)), _ui(Vector2(366, 645)), Color("#EDE9DF"), 3 * _viewport_scale())
+    for lane_y in range(grid_h):
+        if lane_y % 2 == 0:
+            var y := oy + float(lane_y) * cell + cell * 0.5
+            draw_line(_ui(Vector2(28, y)), _ui(Vector2(48, y)), Color(1, 1, 1, 0.65), 2 * _viewport_scale())
     for cone in cones:
         var cx := ox + float(cone["x"]) * cell + cell * 0.5
         var cy := oy + float(cone["y"]) * cell + cell * 0.5
-        draw_circle(_ui(Vector2(cx, cy)), cell * 0.28 * _viewport_scale(), ORANGE)
-        _center("!", cx - cell * 0.32, cy + cell * 0.18, cell * 0.64, 12, BG)
+        draw_colored_polygon(PackedVector2Array([_ui(Vector2(cx, cy - cell * 0.28)), _ui(Vector2(cx - cell * 0.24, cy + cell * 0.24)), _ui(Vector2(cx + cell * 0.24, cy + cell * 0.24))]), ORANGE)
+        draw_line(_ui(Vector2(cx - cell * 0.2, cy + cell * 0.12)), _ui(Vector2(cx + cell * 0.2, cy + cell * 0.12)), CREAM, 2 * _viewport_scale())
     for bus in buses:
-        _draw_bus(bus, ox, oy, cell)
+        if not bool(bus.get("moving", false)):
+            _draw_bus(bus, ox, oy, cell)
+    if motion_elapsed > 0.0:
+        var t: float = clamp((motion_elapsed - 0.0) / 0.25, 0.0, 1.0)
+        var eased: float = 1.0 - pow(1.0 - t, 3.0)
+        var pos: Vector2 = motion_start.lerp(motion_target, eased)
+        _draw_bus_at(motion_bus, ox + pos.x * cell, oy + pos.y * cell, cell)
 
 func _cell_size() -> float:
     return min(40.0, min(346.0 / float(max(grid_w, 1)), 330.0 / float(max(grid_h, 1))))
@@ -300,73 +376,100 @@ func _draw_bus(bus: Dictionary, ox: float, oy: float, cell: float) -> void:
     var horizontal := str(bus["dir"]) == "left" or str(bus["dir"]) == "right"
     var bw := float(bus["size"]) * cell if horizontal else cell
     var bh := cell if horizontal else float(bus["size"]) * cell
-    var shake := 0.0
     if bus.get("shake", 0.0) > 0.0:
-        shake = sin(Time.get_ticks_msec() / 35.0) * 3.0
-    x += shake
-    var color := _color_for_name(str(bus["color"]))
+        x += sin(Time.get_ticks_msec() / 35.0) * 3.0
+    var color: Color = _color_for_name(str(bus["color"]))
     if bool(bus.get("hidden", false)) and not bool(bus.get("revealed", false)):
-        color = Color("#657C7F")
-    _fill(_rect(x + 2, y + 2, bw - 4, bh - 4), color)
-    _outline(_rect(x + 2, y + 2, bw - 4, bh - 4), CREAM if bool(bus.get("selected", false)) else Color("#0B2A36"), 2.5)
-    var symbol := "?" if bool(bus.get("hidden", false)) and not bool(bus.get("revealed", false)) else _symbol_for_name(str(bus["color"]))
-    _center(symbol, x, y + bh * 0.62, bw, 19 if symbol == "?" else 13, BG)
+        color = Color("#98A2A0")
+    _draw_bus_shape(bus, x, y, bw, bh, color)
+
+func _draw_bus_at(bus: Dictionary, x: float, y: float, cell: float) -> void:
+    var horizontal := str(bus["dir"]) == "left" or str(bus["dir"]) == "right"
+    var bw := float(bus["size"]) * cell if horizontal else cell
+    var bh := cell if horizontal else float(bus["size"]) * cell
+    _draw_bus_shape(bus, x, y, bw, bh, _color_for_name(str(bus["color"])))
+
+func _draw_bus_shape(bus: Dictionary, x: float, y: float, bw: float, bh: float, color: Color) -> void:
+    var horizontal := str(bus["dir"]) == "left" or str(bus["dir"]) == "right"
+    var dir := str(bus["dir"])
+    _fill(_rect(x + 3, y + bh - 1, bw - 6, 6), Color(0, 0, 0, 0.28))
+    _fill(_rect(x + 2, y + 2, bw - 4, bh - 5), color)
+    _fill(_rect(x + 5, y + 5, bw - 10, bh - 13), color.lightened(0.12))
     if horizontal:
-        var arrow := "›" if str(bus["dir"]) == "right" else "‹"
-        _text(arrow, x + (bw - 15 if str(bus["dir"]) == "right" else 5), y + bh * 0.63, 17, CREAM)
+        var windshield_x := x + bw - 15 if dir == "right" else x + 7
+        _fill(_rect(windshield_x, y + 7, 8, bh - 17), Color("#A9DCE2"))
+        var window_count: int = maxi(1, int(bw / 22.0))
+        for i in range(window_count):
+            var wx := x + 15.0 + float(i) * ((bw - 31.0) / float(window_count))
+            _fill(_rect(wx, y + 7, 11, bh - 17), Color("#173D4B"))
+        draw_circle(_ui(Vector2(x + 12, y + bh - 1)), 6 * _viewport_scale(), Color("#17252A"))
+        draw_circle(_ui(Vector2(x + bw - 12, y + bh - 1)), 6 * _viewport_scale(), Color("#17252A"))
     else:
-        var arrow_v := "⌄" if str(bus["dir"]) == "down" else "⌃"
-        _center(arrow_v, x, y + bh * 0.65, bw, 15, CREAM)
+        var windshield_y := y + bh - 15 if dir == "down" else y + 7
+        _fill(_rect(x + 7, windshield_y, bw - 14, 8), Color("#A9DCE2"))
+        draw_circle(_ui(Vector2(x + bw - 1, y + 12)), 6 * _viewport_scale(), Color("#17252A"))
+        draw_circle(_ui(Vector2(x + bw - 1, y + bh - 12)), 6 * _viewport_scale(), Color("#17252A"))
+    if bool(bus.get("hidden", false)) and not bool(bus.get("revealed", false)):
+        _center("?", x, y + bh * 0.64, bw, 16, Color("#24363B"))
+func _draw_bay(x: float, y: float, w: float, h: float, occupied: bool) -> void:
+    _fill(_rect(x, y, w - 4, h - 2), Color("#6D777B"))
+    draw_line(_ui(Vector2(x + 2, y + 2)), _ui(Vector2(x + w - 8, y + 2)), SUN, 3 * _viewport_scale())
+    draw_line(_ui(Vector2(x + 2, y + h - 3)), _ui(Vector2(x + w - 8, y + h - 3)), SUN, 3 * _viewport_scale())
+    if not occupied:
+        draw_line(_ui(Vector2(x + w * 0.5, y + 15)), _ui(Vector2(x + w * 0.5, y + h - 15)), Color(1, 1, 1, 0.28), 2 * _viewport_scale())
 
 func _draw_parked_bus(bus: Dictionary, x: float, y: float, w: float, h: float) -> void:
-    var color := _color_for_name(str(bus["color"]))
-    _fill(_rect(x + 5, y + 8, w - 10, h - 15), color)
-    _center(_symbol_for_name(str(bus["color"])), x + 4, y + 31, w - 8, 13, BG)
+    var copy: Dictionary = bus.duplicate(true)
+    copy["dir"] = "right"
+    copy["size"] = 2
+    _draw_bus_shape(copy, x + 4, y + 8, w - 12, h - 18, _color_for_name(str(bus["color"])))
     var cap := int(bus["capacity"])
     var load := int(bus["load"])
     var ratio := float(load) / float(max(cap, 1))
-    _fill(_rect(x + 8, y + h - 10, (w - 16) * ratio, 4), CREAM)
-    _text("%d/%d" % [load, cap], x + 6, y + 16, 9, BG)
-
+    _fill(_rect(x + 7, y + h - 8, (w - 14) * ratio, 3), CREAM)
 func _draw_powerups() -> void:
-    _text("AJUDAS", 22, 733, 11, MUTED)
     var p: Dictionary = progress["powers"]
-    _draw_button(22, 744, 106, 60, "＋ VAGA", Color("#185163"), CREAM, Color("#2B7180"), 13)
-    _draw_button(142, 744, 106, 60, "↻ ORDEM", Color("#185163"), CREAM, Color("#2B7180"), 13)
-    _draw_button(262, 744, 106, 60, "⚓ GUINCHO", CORAL if tow_mode else Color("#185163"), BG if tow_mode else CREAM, Color("#2B7180"), 12)
-    _center("%d" % int(p.get("bay", 0)), 22, 824, 106, 11, MINT)
-    _center("%d" % int(p.get("shuffle", 0)), 142, 824, 106, 11, MINT)
-    _center("%d" % int(p.get("tow", 0)), 262, 824, 106, 11, MINT)
+    _draw_power_button(22, 744, 106, "bay", int(p.get("bay", 0)), "VAGA")
+    _draw_power_button(142, 744, 106, "shuffle", int(p.get("shuffle", 0)), "ORDEM")
+    _draw_power_button(262, 744, 106, "tow", int(p.get("tow", 0)), "GUINCHO")
 
+func _draw_power_button(x: float, y: float, w: float, icon_name: String, count: int, label: String) -> void:
+    _rounded_panel(x, y, w, 60, CORAL if icon_name == "tow" and tow_mode else Color("#285E68"), Color("#6EA7A5"))
+    _icon(icon_name, x + 12, y + 12, 25, CREAM)
+    _text(label, x + 43, y + 28, 11, CREAM)
+    _center(str(count), x, y + 54, w, 10, SUN)
 func _draw_result() -> void:
     _draw_brand(24, 58)
     _draw_coin_pill(254, 27)
     var won := last_result_coins >= 0 and queue.is_empty()
-    _rounded_panel(24, 153, 342, 430, Color("#10394A"), Color("#2A6976"))
+    if won:
+        _draw_confetti()
+    _rounded_panel(24, 153, 342, 430, Color("#173E4B"), Color("#4C8185"))
     if won:
         _center("RUA LIBERADA!", 44, 226, 302, 28, MINT)
-        _center("Você organizou todo o embarque", 44, 256, 302, 14, CREAM)
-        _center("sem deixar ninguém para trás.", 44, 278, 302, 14, CREAM)
-        draw_circle(_ui(Vector2(195, 355)), 64 * _viewport_scale(), Color("#164E58"))
-        _center("★", 131, 378, 128, 66, SUN)
+        _center("Todo mundo embarcou.", 44, 256, 302, 14, CREAM)
+        _draw_star(Vector2(195, 354), 58, SUN)
         _center("+%d moedas" % last_result_coins, 44, 466, 302, 25, SUN)
         _center("tempo %s" % _format_time(level_elapsed), 44, 494, 302, 13, MUTED)
-        _draw_button(44, 520, 302, 56, "PRÓXIMA FASE  →", CORAL, BG)
+        _draw_button(44, 520, 302, 56, "PRÓXIMA FASE", CORAL, BG)
     else:
         _center("TRÂNSITO PARADO", 44, 226, 302, 28, CORAL)
-        _center("A primeira pessoa da fila não", 44, 259, 302, 14, CREAM)
-        _center("encontrou um ônibus compatível.", 44, 281, 302, 14, CREAM)
+        _center("A fila precisa de outra rota.", 44, 259, 302, 14, CREAM)
         _rounded_panel(67, 320, 256, 78, Color("#0B2A36"), Color("#9D4F4B"))
         _center("CONTINUE COM UMA VAGA", 67, 350, 256, 13, SUN)
-        _center("Assista 5s de vídeo simulado", 67, 374, 256, 12, MUTED)
-        _draw_button(44, 430, 302, 54, "ASSISTIR VÍDEO  +1", PANEL_2, CREAM, Color("#2B7180"), 15)
+        _center("vídeo simulado de 5 segundos", 67, 374, 256, 12, MUTED)
+        _draw_button(44, 430, 302, 54, "ASSISTIR VÍDEO", PANEL_2, CREAM, Color("#2B7180"), 15)
         _draw_button(44, 496, 146, 54, "TENTAR DE NOVO", CORAL, BG, Color.TRANSPARENT, 13)
         _draw_button(200, 496, 146, 54, "MAPA", PANEL_2, CREAM, Color("#2B7180"), 15)
 
+func _draw_confetti() -> void:
+    for bit in confetti:
+        var c: Color = bit["color"]
+        draw_rect(Rect2(_ui(Vector2(bit["x"], bit["y"])), Vector2(5, 10) * _viewport_scale()), c, true)
 func _draw_store() -> void:
     _top_bar("LOJA SIMULADA", true)
     _center("Ajude o trânsito a fluir", 24, 103, 342, 21, CREAM)
-    _center("Nenhuma compra real • só protótipo", 24, 127, 342, 12, MUTED)
+    _center("Nenhuma compra real | só protótipo", 24, 127, 342, 12, MUTED)
     _rounded_panel(24, 153, 342, 80, Color("#163F4D"), Color("#2B7180"))
     _text("SALDO ATUAL", 44, 185, 12, MUTED)
     _text("%d moedas" % int(progress["coins"]), 44, 214, 24, SUN)
@@ -393,7 +496,7 @@ func _draw_settings() -> void:
     _draw_button(270, 233, 76, 40, "LIGADA" if progress["vibration"] else "OFF", MINT if progress["vibration"] else Color("#34545B"), BG if progress["vibration"] else MUTED, Color.TRANSPARENT, 11)
     _rounded_panel(24, 297, 342, 92, Color("#163F4D"), Color("#2B7180"))
     _text("CONTA", 44, 328, 12, MUTED)
-    _text("Convidado • progresso neste navegador", 44, 357, 14, CREAM)
+    _text("Convidado | progresso neste navegador", 44, 357, 14, CREAM)
     _draw_button(244, 315, 102, 46, "ENTRAR", PANEL_2, MINT, Color("#2B7180"), 13)
     _draw_button(24, 417, 342, 52, "POLÍTICA DE PRIVACIDADE", PANEL_2, CREAM, Color("#2B7180"), 14)
     _draw_button(24, 481, 342, 52, "FERRAMENTAS DE DEBUG", PANEL_2, CREAM, Color("#2B7180"), 14)
@@ -472,6 +575,8 @@ func _map_tap(pos: Vector2) -> void:
             return
 
 func _game_tap(pos: Vector2) -> void:
+    if motion_elapsed > 0.0:
+        return
     if _inside(pos, 18, 18, 48, 42):
         _save_progress()
         screen = "map"
@@ -489,7 +594,7 @@ func _game_tap(pos: Vector2) -> void:
     var cell := _cell_size()
     for i in range(buses.size() - 1, -1, -1):
         var bus: Dictionary = buses[i]
-        var rect := _bus_rect(bus, 22.0, 286.0, cell)
+        var rect := _bus_rect(bus, 22.0, 316.0, cell)
         if rect.has_point(pos):
             if tow_mode:
                 _tow_bus(i)
@@ -593,24 +698,42 @@ func _try_send_bus(index: int) -> void:
         _show_toast("Ops! Esse ônibus está bloqueado")
         if bool(progress["vibration"]):
             Input.vibrate_handheld(35)
+        _play_sfx("bump")
         return
     _send_bus(index, false)
 
 func _send_bus(index: int, ignore_path: bool) -> void:
-    if parked.size() >= slot_count:
+    if parked.size() >= slot_count or motion_elapsed > 0.0:
         return
+    motion_bus = buses[index].duplicate(true)
+    motion_bus["revealed"] = true
+    motion_bus["moving"] = true
+    motion_index = index
+    motion_ignore_path = ignore_path
+    motion_elapsed = 0.001
+    motion_start = Vector2(float(motion_bus["x"]), float(motion_bus["y"]))
+    motion_target = motion_start
+    var dir := str(motion_bus["dir"])
+    if dir == "right": motion_target.x = float(grid_w) + 0.8
+    elif dir == "left": motion_target.x = -float(motion_bus["size"]) - 0.8
+    elif dir == "down": motion_target.y = float(grid_h) + 0.8
+    else: motion_target.y = -float(motion_bus["size"]) - 0.8
+    buses[index]["moving"] = true
+    _play_sfx("tap")
+
+func _complete_send_bus() -> void:
+    if motion_index < 0 or motion_index >= buses.size():
+        motion_elapsed = 0.0
+        return
+    var index := motion_index
     var bus: Dictionary = buses[index]
     bus["revealed"] = true
-    var parked_bus := {
-        "color": bus["color"],
-        "size": bus["size"],
-        "capacity": int(bus["size"]) * 2,
-        "load": 0,
-        "id": bus.get("id", index),
-        "ignore_path": ignore_path
-    }
+    var parked_bus := {"color": bus["color"], "size": bus["size"], "capacity": int(bus["size"]) * 2, "load": 0, "id": bus.get("id", index), "ignore_path": motion_ignore_path}
     parked.append(parked_bus)
     buses.remove_at(index)
+    motion_elapsed = 0.0
+    motion_index = -1
+    motion_bus = {}
     _process_queue()
     _record_action("send_bus", int(parked_bus["id"]))
     _save_progress()
@@ -618,8 +741,6 @@ func _send_bus(index: int, ignore_path: bool) -> void:
         _finish_level(false)
     elif queue.is_empty():
         _finish_level(true)
-    queue_redraw()
-
 func _path_clear(bus: Dictionary) -> bool:
     var bx := int(bus["x"])
     var by := int(bus["y"])
@@ -692,9 +813,12 @@ func _process_queue() -> void:
         if target < 0:
             break
         queue.pop_front()
+        boarding_time = 0.28
+        _play_sfx("board")
         parked[target]["load"] = int(parked[target]["load"]) + 1
         if int(parked[target]["load"]) >= int(parked[target]["capacity"]):
             parked.remove_at(target)
+            _play_sfx("depart")
             if bool(progress["vibration"]):
                 Input.vibrate_handheld(22)
 
@@ -767,6 +891,10 @@ func _watch_video() -> void:
 
 func _finish_level(won: bool) -> void:
     if won:
+        _play_sfx("win")
+        confetti = []
+        for i in range(28):
+            confetti.append({"x": 28.0 + float((i * 47) % 330), "y": 140.0 + float((i * 19) % 160), "t": 0.0, "color": color_values[i % color_values.size()]})
         var reward := 100 + (0 if used_powerups > 0 else 50)
         if _current_is_hard():
             reward *= 2
@@ -795,7 +923,7 @@ func _start_daily() -> void:
     else:
         daily_mode = true
         start_level(3 + (abs(today.hash()) % 10))
-        _show_toast("Desafio diário • recompensa extra ao vencer")
+        _show_toast("Desafio diário | recompensa extra ao vencer")
 
 func _record_action(action: String, value) -> void:
     progress["metrics"].append({"event":action, "value":value, "timestamp":Time.get_datetime_string_from_system()})
@@ -810,9 +938,7 @@ func _color_for_name(name: String) -> Color:
     return color_values[idx] if idx >= 0 else CREAM
 
 func _symbol_for_name(name: String) -> String:
-    var idx := color_names.find(name)
-    return color_symbols[idx] if idx >= 0 else "•"
-
+    return ""
 func _validate_levels() -> bool:
     if level_db.size() != 30:
         return false
