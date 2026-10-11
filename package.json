@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "verify": "python3 tools/verify.py",
+    "verify": "python3 tools/validate_levels.py",
     "export": "mkdir -p dist && godot --headless --path . --export-release Web dist/index.html",
     "test:grounding": "godot --headless --audio-driver Dummy --fixed-fps 60 --path . --script tests/test_grounding.gd",
     "test:grounding-render": "godot --audio-driver Dummy --disable-vsync --fixed-fps 60 --path . --script tests/test_grounding_render.gd",

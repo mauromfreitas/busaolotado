@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "title": "Busão Lotado",
+  "description": "Libere ônibus, combine passageiros e desembarace 30 ruas coloridas.",
+  "defaultCaptions": {
+    "x": "Busão Lotado — um puzzle casual de trânsito e cores.",
+    "facebook": "Libere os ônibus e organize o embarque no Busão Lotado.",
+    "reddit": "Puzzle mobile-first de ônibus, filas e rotas livres.",
+    "discord": "Busão Lotado: toque, organize e libere a rua."
+  },
+  "assets": {
+    "favicon": "assets/share/favicon.png"
+  }
+}
