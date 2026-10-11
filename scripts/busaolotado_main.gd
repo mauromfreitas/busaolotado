@@ -61,6 +61,7 @@ var motion_target := Vector2.ZERO
 var motion_index := -1
 var motion_ignore_path := false
 var boarding_time := 0.0
+var boarding_visuals: Array = []
 var confetti: Array = []
 
 var color_names := ["coral", "azul", "amarelo", "roxo", "verde", "laranja"]
@@ -86,6 +87,10 @@ func _process(delta: float) -> void:
         shake_time -= delta
     if boarding_time > 0.0:
         boarding_time -= delta
+    if not boarding_visuals.is_empty():
+        for passenger in boarding_visuals:
+            passenger["t"] = float(passenger["t"]) + delta / 0.34
+        boarding_visuals = boarding_visuals.filter(func(passenger): return float(passenger["t"]) < 1.0)
     if motion_elapsed > 0.0:
         motion_elapsed += delta
         if motion_elapsed >= 0.25:
@@ -217,10 +222,41 @@ func _draw_star(center: Vector2, radius: float, color: Color) -> void:
 
 func _draw_person(x: float, y: float, color: Color, scale := 1.0, bounce := 0.0) -> void:
     var yy := y - bounce
-    draw_circle(_ui(Vector2(x, yy - 9 * scale)), 6.0 * scale * _viewport_scale(), Color("#FFE0B2"))
-    _fill(_rect(x - 6 * scale, yy - 3 * scale, 12 * scale, 13 * scale), color)
-    draw_line(_ui(Vector2(x - 4 * scale, yy + 10 * scale)), _ui(Vector2(x - 4 * scale, yy + 16 * scale)), Color("#071A23"), 2.0 * _viewport_scale())
-    draw_line(_ui(Vector2(x + 4 * scale, yy + 10 * scale)), _ui(Vector2(x + 4 * scale, yy + 16 * scale)), Color("#071A23"), 2.0 * _viewport_scale())
+    var s := scale * _viewport_scale()
+    # Soft contact shadow gives the tiny character a grounded, 2.5D silhouette.
+    _draw_ellipse_poly(_ui(Vector2(x, yy + 17 * scale)), Vector2(11, 3) * s, Color(0, 0, 0, 0.22))
+    # Legs, shoes and a rounded torso with a shaded side.
+    draw_line(_ui(Vector2(x - 3 * scale, yy + 9 * scale)), _ui(Vector2(x - 5 * scale, yy + 17 * scale)), Color("#26323A"), 3.0 * s)
+    draw_line(_ui(Vector2(x + 3 * scale, yy + 9 * scale)), _ui(Vector2(x + 5 * scale, yy + 17 * scale)), Color("#26323A"), 3.0 * s)
+    _fill(_rect(x - 7 * scale, yy - 3 * scale, 14 * scale, 14 * scale), color.darkened(0.18))
+    _fill(_rect(x - 5 * scale, yy - 4 * scale, 8 * scale, 12 * scale), color.lightened(0.15))
+    # Arms angled away from the body read better while the passenger is moving.
+    draw_line(_ui(Vector2(x - 6 * scale, yy)), _ui(Vector2(x - 11 * scale, yy + 7 * scale)), color.darkened(0.25), 2.5 * s)
+    draw_line(_ui(Vector2(x + 6 * scale, yy)), _ui(Vector2(x + 11 * scale, yy + 7 * scale)), color.darkened(0.25), 2.5 * s)
+    # Head, hair cap, face highlight and tiny nose.
+    draw_circle(_ui(Vector2(x, yy - 10 * scale)), 7.0 * s, Color("#F6C99E"))
+    draw_circle(_ui(Vector2(x, yy - 13 * scale)), 7.0 * s, Color("#4A3030"))
+    draw_arc(_ui(Vector2(x, yy - 10 * scale)), 6.0 * s, 0.15, PI - 0.15, 12, Color("#F6C99E"), 3.0 * s)
+    draw_circle(_ui(Vector2(x + 3 * scale, yy - 10 * scale)), 0.9 * s, Color("#24343A"))
+
+func _draw_ellipse_poly(center: Vector2, radii: Vector2, color: Color) -> void:
+    var points := PackedVector2Array()
+    for i in range(20):
+        var a := TAU * float(i) / 20.0
+        points.append(center + Vector2(cos(a) * radii.x, sin(a) * radii.y))
+    draw_colored_polygon(points, color)
+
+func _draw_boarding_visuals() -> void:
+    for passenger in boarding_visuals:
+        var t: float = clamp(float(passenger["t"]), 0.0, 1.0)
+        var eased: float = 1.0 - pow(1.0 - t, 3.0)
+        var from_pos: Vector2 = passenger["from"]
+        var to_pos: Vector2 = passenger["to"]
+        var pos := from_pos.lerp(to_pos, eased)
+        pos.y -= sin(t * PI) * 48.0
+        var shadow_pos := from_pos.lerp(to_pos, eased)
+        _draw_ellipse_poly(_ui(shadow_pos + Vector2(0, 14)), Vector2(10 - 4 * t, 3) * _viewport_scale(), Color(0, 0, 0, 0.18))
+        _draw_person(pos.x, pos.y, passenger["color"], 0.68, 0.0)
 
 func _draw_hand_pointer(x: float, y: float, pulse: float) -> void:
     var bob := sin(Time.get_ticks_msec() / 220.0) * 4.0
@@ -333,6 +369,7 @@ func _draw_game() -> void:
         _center("rua vazia", 22, 221, 346, 12, Color("#4A676C"))
     _draw_board()
     _draw_powerups()
+    _draw_boarding_visuals()
     if current_level <= 3 and not buses.is_empty() and motion_elapsed <= 0.0:
         var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 260.0)
         var target: Dictionary = buses[0]
@@ -392,23 +429,37 @@ func _draw_bus_at(bus: Dictionary, x: float, y: float, cell: float) -> void:
 func _draw_bus_shape(bus: Dictionary, x: float, y: float, bw: float, bh: float, color: Color) -> void:
     var horizontal := str(bus["dir"]) == "left" or str(bus["dir"]) == "right"
     var dir := str(bus["dir"])
-    _fill(_rect(x + 3, y + bh - 1, bw - 6, 6), Color(0, 0, 0, 0.28))
-    _fill(_rect(x + 2, y + 2, bw - 4, bh - 5), color)
-    _fill(_rect(x + 5, y + 5, bw - 10, bh - 13), color.lightened(0.12))
+    # Layered vector planes create a small toy-like 3D bus without a heavy 3D renderer.
+    _draw_ellipse_poly(_ui(Vector2(x + bw * 0.5, y + bh + 3)), Vector2(max(8.0, bw * 0.42), 4.0) * _viewport_scale(), Color(0, 0, 0, 0.28))
+    _fill(_rect(x + 2, y + 5, bw - 4, bh - 6), color.darkened(0.28))
+    _fill(_rect(x + 2, y + 2, bw - 4, bh - 8), color)
+    draw_colored_polygon(PackedVector2Array([_ui(Vector2(x + 6, y + 3)), _ui(Vector2(x + bw - 6, y + 3)), _ui(Vector2(x + bw - 11, y + 9)), _ui(Vector2(x + 11, y + 9))]), color.lightened(0.26))
+    _fill(_rect(x + 5, y + 9, bw - 10, bh - 18), color.darkened(0.05))
     if horizontal:
-        var windshield_x := x + bw - 15 if dir == "right" else x + 7
-        _fill(_rect(windshield_x, y + 7, 8, bh - 17), Color("#A9DCE2"))
+        var windshield_x: float = x + bw - 15 if dir == "right" else x + 7
+        _fill(_rect(windshield_x, y + 10, 8, bh - 20), Color("#C4F0F0"))
         var window_count: int = maxi(1, int(bw / 22.0))
         for i in range(window_count):
             var wx := x + 15.0 + float(i) * ((bw - 31.0) / float(window_count))
-            _fill(_rect(wx, y + 7, 11, bh - 17), Color("#173D4B"))
+            _fill(_rect(wx, y + 10, 11, bh - 20), Color("#173D4B"))
+            draw_line(_ui(Vector2(wx + 2, y + 11)), _ui(Vector2(wx + 8, y + 11)), Color(0.72, 0.95, 0.96, 0.6), 1.5 * _viewport_scale())
         draw_circle(_ui(Vector2(x + 12, y + bh - 1)), 6 * _viewport_scale(), Color("#17252A"))
         draw_circle(_ui(Vector2(x + bw - 12, y + bh - 1)), 6 * _viewport_scale(), Color("#17252A"))
+        draw_circle(_ui(Vector2(x + 12, y + bh - 1)), 2.4 * _viewport_scale(), Color("#B9C1BC"))
+        draw_circle(_ui(Vector2(x + bw - 12, y + bh - 1)), 2.4 * _viewport_scale(), Color("#B9C1BC"))
+        var front_x: float = x + bw - 5 if dir == "right" else x + 5
+        draw_circle(_ui(Vector2(front_x, y + 12)), 2.0 * _viewport_scale(), SUN)
+        draw_circle(_ui(Vector2(front_x, y + bh - 12)), 2.0 * _viewport_scale(), SUN)
     else:
-        var windshield_y := y + bh - 15 if dir == "down" else y + 7
-        _fill(_rect(x + 7, windshield_y, bw - 14, 8), Color("#A9DCE2"))
+        var windshield_y: float = y + bh - 15 if dir == "down" else y + 7
+        _fill(_rect(x + 7, windshield_y, bw - 14, 8), Color("#C4F0F0"))
         draw_circle(_ui(Vector2(x + bw - 1, y + 12)), 6 * _viewport_scale(), Color("#17252A"))
         draw_circle(_ui(Vector2(x + bw - 1, y + bh - 12)), 6 * _viewport_scale(), Color("#17252A"))
+        draw_circle(_ui(Vector2(x + bw - 1, y + 12)), 2.4 * _viewport_scale(), Color("#B9C1BC"))
+        draw_circle(_ui(Vector2(x + bw - 1, y + bh - 12)), 2.4 * _viewport_scale(), Color("#B9C1BC"))
+        var front_y: float = y + bh - 5 if dir == "down" else y + 5
+        draw_circle(_ui(Vector2(x + 12, front_y)), 2.0 * _viewport_scale(), SUN)
+        draw_circle(_ui(Vector2(x + bw - 12, front_y)), 2.0 * _viewport_scale(), SUN)
     if bool(bus.get("hidden", false)) and not bool(bus.get("revealed", false)):
         _center("?", x, y + bh * 0.64, bw, 16, Color("#24363B"))
 func _draw_bay(x: float, y: float, w: float, h: float, occupied: bool) -> void:
@@ -672,6 +723,7 @@ func start_level(id: int) -> void:
     tow_mode = false
     used_powerups = 0
     level_elapsed = 0.0
+    boarding_visuals = []
     parked = []
     cones = Array(data.get("cones", [])).duplicate(true)
     queue = Array(data["queue"]).duplicate(true)
@@ -812,6 +864,10 @@ func _process_queue() -> void:
                 break
         if target < 0:
             break
+        var bay_x: float = 22.0 + float(target) * (346.0 / float(max(slot_count, 1)))
+        var bay_w: float = 58.0 if slot_count <= 5 else 49.0
+        var passenger_color: Color = _color_for_name(front)
+        boarding_visuals.append({"from": Vector2(44, 226), "to": Vector2(bay_x + bay_w * 0.5, 132), "color": passenger_color, "t": 0.0})
         queue.pop_front()
         boarding_time = 0.28
         _play_sfx("board")
