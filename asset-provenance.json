@@ -1974,6 +1974,27 @@
     "hostMedia": [
       {
         "contentMatches": [],
+        "path": "index.144x144.png",
+        "sha256": "sha256:89c29e208ee44545fff24251b932a34d5b964cb181bed40a78b55e259507d089",
+        "size": 9031,
+        "sourcePaths": []
+      },
+      {
+        "contentMatches": [],
+        "path": "index.180x180.png",
+        "sha256": "sha256:853f4cdc628eef4ff1dad084a011565f7325873b745e7707533c5e4046c059e8",
+        "size": 13129,
+        "sourcePaths": []
+      },
+      {
+        "contentMatches": [],
+        "path": "index.512x512.png",
+        "sha256": "sha256:ad5f985c4ad3f5767982cb125e98894d5f1c7a5a9b8cb5ce4aba8e0220e62cb0",
+        "size": 55659,
+        "sourcePaths": []
+      },
+      {
+        "contentMatches": [],
         "path": "index.apple-touch-icon.png",
         "sha256": "sha256:853f4cdc628eef4ff1dad084a011565f7325873b745e7707533c5e4046c059e8",
         "size": 13129,
@@ -2003,9 +2024,9 @@
         ]
       }
     ],
-    "pckSha256": "sha256:8fe4afa71a3bf7e2941cb38fb64191530e0ddc4c133a81b3c510a74a76bc2010",
+    "pckSha256": "sha256:dabb22e248f4f18b4c7838c71aaccc0b6b3574311cf77d1a7cfe23a2d381ad24",
     "profile": "release",
-    "sourceFingerprint": "sha256:c6ec2179c21ae9538fd5b9d27bb4150a01c591499681706ecaa2d3a09cb1e15b"
+    "sourceFingerprint": "sha256:8d7c895b3c078e6d16e709f7521593b33c0687ae3bf5ec4ba703a6660d93ec50"
   },
   "procedures": {},
   "summary": {
@@ -2032,9 +2053,9 @@
       "used": 0
     },
     "exportedHostMedia": {
-      "paths": 4,
-      "uniqueHashes": 4,
-      "unmatchedSourcePaths": 3
+      "paths": 7,
+      "uniqueHashes": 6,
+      "unmatchedSourcePaths": 6
     },
     "files": {
       "downloaded": 0,
