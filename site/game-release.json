@@ -3,13 +3,13 @@
   "engineVersion": "4.7.2.stable.official.ed1daf0bf",
   "inputs": {
     "objectFormat": "sha1",
-    "tree": "6cb642042c90ab59daee35cb9ea8d9788bf4c608",
+    "tree": "32acb7682034cd9b6cf459b91f02ed7a80131ef5",
     "entries": [
       {
         "path": ".gitignore",
         "type": "file",
         "mode": "100644",
-        "object": "737e287493afd53baa7b9f62cd71ee49450e7910"
+        "object": "729841b1d4943e738854b5b0c5c67f222f1e9a35"
       },
       {
         "path": ".manus-game-template.json",
@@ -51,7 +51,7 @@
         "path": "assets.lock.json",
         "type": "file",
         "mode": "100644",
-        "object": "5748244ca54983a611ccf668e6adc2e127b586a6"
+        "object": "97af6919ffae75dad7e5b346d258e0cf440b1e30"
       },
       {
         "path": "assets/busaolotado_icon.svg",
@@ -74,6 +74,23 @@
         "type": "file",
         "mode": "100644",
         "object": "c5e5cce06e8039f29abbfc79d2cfc9af89755c72"
+      },
+      {
+        "path": "assets/source3d/.gdignore",
+        "type": "file",
+        "mode": "100644",
+        "object": "e538d15dc3914eb407452e0ea96c9e8c29676cff"
+      },
+      {
+        "path": "assets/source3d/passenger_lowpoly.glb",
+        "type": "managed",
+        "sha256": "sha256:e25e2a3805610c473132c5392035c18e3cdb51065048fba2ae771528cb148cc3"
+      },
+      {
+        "path": "assets/source3d/vertical_slice_3d.tscn",
+        "type": "file",
+        "mode": "100644",
+        "object": "55ef07c37c1aaa8a19dd4e5a460fadefed5de041"
       },
       {
         "path": "assets/template/audio_v2/manifest.json",
@@ -1085,6 +1102,132 @@
         "object": "cdbbd05bec259aab37a96d939eb8f843caa99543"
       },
       {
+        "path": "concepts/.gdignore",
+        "type": "file",
+        "mode": "100644",
+        "object": "8b137891791fe96927ad78e64b0aad7bded08bdc"
+      },
+      {
+        "path": "concepts/01_camera_isometric.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "53743c390761aa21ff924c7c2bf866b47d9fb7ae"
+      },
+      {
+        "path": "concepts/01_camera_isometric.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "7e49502345fb06900bef86b6741363ba989c1137"
+      },
+      {
+        "path": "concepts/02_camera_topdown.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "6418d8e1c808204db5f4b4e045e59b1f327f7ed2"
+      },
+      {
+        "path": "concepts/02_camera_topdown.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "76d383ae766bbc645366ff5180ec0a13a50b25b3"
+      },
+      {
+        "path": "concepts/03_buses_round.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "e8ae653051e9edee7d21dfaa30fafca62ffe952c"
+      },
+      {
+        "path": "concepts/03_buses_round.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "aa8f0f87d9db2be00885c86f0651e86bcaf90e67"
+      },
+      {
+        "path": "concepts/04_passengers_round.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "b2448aa7fe7ddd2f8c3b5dc362be67e11edffa31"
+      },
+      {
+        "path": "concepts/04_passengers_round.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "e0ddd28489d20c568dad303f926a43de097fbbcd"
+      },
+      {
+        "path": "concepts/05_bays_city.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "9d9383e8b65e6f475de54566238dde23a131505c"
+      },
+      {
+        "path": "concepts/05_bays_city.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "d019bffb29601994fef711e0d6548504ac233d4c"
+      },
+      {
+        "path": "concepts/06_buses_boxy.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "7aba9661bfa68a8850727c71690c13a91c582b78"
+      },
+      {
+        "path": "concepts/06_buses_boxy.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "8d2b70165bf12a085169efe0814906b02bc19f82"
+      },
+      {
+        "path": "concepts/07_passengers_chibi.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "ca19cdbe5dffbe03a649afafeabeb0025f62c677"
+      },
+      {
+        "path": "concepts/07_passengers_chibi.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "3a0d1e0d9cb23685944ccb0e3851b60f8d050f7e"
+      },
+      {
+        "path": "concepts/08_city_park.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "e65ef8a9abb38594bd17eaddd29c898ae8f46278"
+      },
+      {
+        "path": "concepts/08_city_park.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "1d442d7a57cc2044b0395b393e5e583ce4ba09d1"
+      },
+      {
+        "path": "concepts/09_boarding_arc.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "b8db87023070254cee4c9f8fcb4cc7173b1174d8"
+      },
+      {
+        "path": "concepts/09_boarding_arc.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "19a5c9a55876f5c0e493eaedf001dbf8e487306e"
+      },
+      {
+        "path": "concepts/10_boarding_cutaway.png",
+        "type": "file",
+        "mode": "100644",
+        "object": "79b9d0c5890b0b1972610353891294d0f45bdfa4"
+      },
+      {
+        "path": "concepts/10_boarding_cutaway.png.import",
+        "type": "file",
+        "mode": "100644",
+        "object": "f7db0d05b8024790b9c09a2d9b9fab413a72bda2"
+      },
+      {
         "path": "config/tweaks/catalog.gd",
         "type": "file",
         "mode": "100644",
@@ -1385,10 +1528,40 @@
         "object": "cf251c899fdaf31f7419ecec9c8149fe7c3334fc"
       },
       {
+        "path": "scenes/3d/boarding_bay.tscn",
+        "type": "file",
+        "mode": "100644",
+        "object": "434d1fd250fa83c3fd35bcfd01ea54e79c6991ac"
+      },
+      {
+        "path": "scenes/3d/bus_long.tscn",
+        "type": "file",
+        "mode": "100644",
+        "object": "e614e5b0d9b9fefa06e94ed2605e7b65a3790b64"
+      },
+      {
+        "path": "scenes/3d/bus_medium.tscn",
+        "type": "file",
+        "mode": "100644",
+        "object": "93e0ed6e06553b1a2d4481d0088b6953bdceefbf"
+      },
+      {
+        "path": "scenes/3d/bus_small.tscn",
+        "type": "file",
+        "mode": "100644",
+        "object": "6eb6455196d93f2538119209012b8d7eb8ad22cd"
+      },
+      {
+        "path": "scenes/3d/passenger_lowpoly.tscn",
+        "type": "file",
+        "mode": "100644",
+        "object": "90064b00ba760cce090f9d1897f57f245c88b47f"
+      },
+      {
         "path": "scenes/main.tscn",
         "type": "file",
         "mode": "100644",
-        "object": "1bf445e8f4273dccc72453f1eea6ab37446d1fe8"
+        "object": "177cb70daaf2a254faf4717a8b44987a614079ac"
       },
       {
         "path": "scripts/bomb_plushie.gd",
@@ -1406,7 +1579,7 @@
         "path": "scripts/busaolotado_main.gd",
         "type": "file",
         "mode": "100644",
-        "object": "ac6d3df0cb2ce1bad23908599f7f7cf277bd7970"
+        "object": "d87ed440e758bf41d7737a1bff8fc4cc91a317c8"
       },
       {
         "path": "scripts/busaolotado_main.gd.uid",
@@ -1509,6 +1682,18 @@
         "type": "file",
         "mode": "100644",
         "object": "29f3ca005d69735e0d36affbef4c375acde302bc"
+      },
+      {
+        "path": "scripts/game_3d_view.gd",
+        "type": "file",
+        "mode": "100644",
+        "object": "d181d9eaed2084891d0f29a93f55e7c23dadbac1"
+      },
+      {
+        "path": "scripts/game_3d_view.gd.uid",
+        "type": "file",
+        "mode": "100644",
+        "object": "c999deda12e5e8a5ae3afcaff8e8d1705047c014"
       },
       {
         "path": "scripts/game_audio.gd",
@@ -2393,10 +2578,22 @@
         "object": "b2da56290d4dade84ff5698fa6c4f4888502c66f"
       },
       {
+        "path": "tools/capture_3d.gd",
+        "type": "file",
+        "mode": "100644",
+        "object": "44c9ab94ce597733ef37cbb90f1a95416c1c5e7e"
+      },
+      {
+        "path": "tools/capture_3d.gd.uid",
+        "type": "file",
+        "mode": "100644",
+        "object": "3ca59477a818e4286c6b356f72e11b2ee511e67a"
+      },
+      {
         "path": "tools/capture_game.gd",
         "type": "file",
         "mode": "100644",
-        "object": "b7358d683f03ccba3418aef02c39c8b67603e741"
+        "object": "eb7d15a3f2fba0201d361d616e7d269a0e3b4b29"
       },
       {
         "path": "tools/capture_game.gd.uid",
@@ -2433,6 +2630,30 @@
         "type": "file",
         "mode": "100644",
         "object": "0810aab0e2ee9e8c03cc20d7e738a2b180ffa1ca"
+      },
+      {
+        "path": "tools/generate_3d_assets.gd",
+        "type": "file",
+        "mode": "100644",
+        "object": "f6185897a34751cc5e7f91ed0fde124bff9f41d0"
+      },
+      {
+        "path": "tools/generate_3d_assets.gd.uid",
+        "type": "file",
+        "mode": "100644",
+        "object": "a4df5f3fd92f639485a52b483c1de08e73c58846"
+      },
+      {
+        "path": "tools/generate_3d_showcase.gd",
+        "type": "file",
+        "mode": "100644",
+        "object": "6f67785982bf77a4c76b0b675d22fc4ebc1f0009"
+      },
+      {
+        "path": "tools/generate_3d_showcase.gd.uid",
+        "type": "file",
+        "mode": "100644",
+        "object": "9f68c04b7ecccbc5679dd6d2dd3b5cbfaa099718"
       },
       {
         "path": "tools/generate_localization.py",
@@ -2540,7 +2761,7 @@
         "path": "tools/test_loop.gd",
         "type": "file",
         "mode": "100644",
-        "object": "43b89dd3e9a0dd383f04c567bb82dfca5a1a57ef"
+        "object": "fdc8ebc35a61a17a9e02342e0d467d54565e1838"
       },
       {
         "path": "tools/test_loop.gd.uid",
@@ -2641,7 +2862,7 @@
     ]
   },
   "build": {
-    "snapshotId": "sha256:908ff3efacbc4bb6a3b70c34a4c3430bf15ed1c0bd00ffd601d0501a1ae51cf3",
+    "snapshotId": "sha256:03a1de508ab0a01273ca50011431d97cf12534dc2671be4c08e31188abb329db",
     "toolchain": {
       "engineVersion": "4.7.2.stable.official.ed1daf0bf",
       "engineDigest": "sha256:8d106cbe6144c2dc7e881d61d2429c1a8a76e6b22ef48bd5e48dcf934953f71e",
@@ -2654,7 +2875,7 @@
     "profile": "release",
     "export": {
       "profile": "release",
-      "snapshotId": "sha256:908ff3efacbc4bb6a3b70c34a4c3430bf15ed1c0bd00ffd601d0501a1ae51cf3",
+      "snapshotId": "sha256:03a1de508ab0a01273ca50011431d97cf12534dc2671be4c08e31188abb329db",
       "files": {
         "THIRD_PARTY_NOTICES.txt": "sha256:5a9ad06f17b004e6413bf90a5362201c0e61bcb6a615b9a852f36e5dfd7b90e4",
         "index.144x144.png": "sha256:89c29e208ee44545fff24251b932a34d5b964cb181bed40a78b55e259507d089",
@@ -2663,18 +2884,18 @@
         "index.apple-touch-icon.png": "sha256:853f4cdc628eef4ff1dad084a011565f7325873b745e7707533c5e4046c059e8",
         "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
         "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-        "index.html": "sha256:3da4997bb8152391c9afc99d75c2c03b21dc96ea4a5834cfdc8f9dc5ffd84ffc",
+        "index.html": "sha256:8dabc62e81a31965f1dbce9de764e4cc7e6ad2c5f10a68c05af7575e9aec5bd9",
         "index.icon.png": "sha256:a72fa8f228fedb1f6c26a3d752a57e74818029806d8c957aae859727a637d99d",
         "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
         "index.manifest.json": "sha256:5d6d4093a6015e640dfd354f581aa4bc6f12d8e50ea65e8cccca809e2bd6107e",
         "index.offline.html": "sha256:b0a5d443e78f58717adac780bac91c1431bfa3b801c41f4707d507fb5ad2e47f",
-        "index.pck": "sha256:aea70205f96ecbad3dd223c2c53d2f2b83eb940ebc17a16a669446dcc747d2fd",
+        "index.pck": "sha256:ae2d59bc825bfd63983a5e5c10b8f3641ea66f62bab1fb3f0603d2321418e010",
         "index.png": "sha256:dc78cf86c906c5c17a7829b9ed6e635f2abe1b66c2a4a80979a02a65f739baa0",
-        "index.service.worker.js": "sha256:380e56392ff4ee2df952b3dc290686413beb4613694c0218b109ed976b788636",
+        "index.service.worker.js": "sha256:a2bd41ce433c1d3d52f68eb1e16c584545e0a786e51274c32389c1578108b6ce",
         "index.wasm": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0",
         "open-source-licenses.html": "sha256:68be5e4c66116c05fbe449a8e7f4e6896d6b6bb92faee49b53635d3a12241ebb"
       },
-      "digest": "sha256:e669561f17e0e1518c89cab8dabead601fe9e09b70e6526f5bf4bc8de29b189f"
+      "digest": "sha256:139158b4df61dcbe8995286d17314f3642f48694bb9c87328208c083c20494f9"
     }
   },
   "artifacts": {
@@ -2683,8 +2904,8 @@
       "sha256": "sha256:fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
     },
     "pck": {
-      "path": "/manus-storage/game/sha256/aea70205f96ecbad3dd223c2c53d2f2b83eb940ebc17a16a669446dcc747d2fd.pck",
-      "sha256": "sha256:aea70205f96ecbad3dd223c2c53d2f2b83eb940ebc17a16a669446dcc747d2fd"
+      "path": "/manus-storage/game/sha256/ae2d59bc825bfd63983a5e5c10b8f3641ea66f62bab1fb3f0603d2321418e010.pck",
+      "sha256": "sha256:ae2d59bc825bfd63983a5e5c10b8f3641ea66f62bab1fb3f0603d2321418e010"
     }
   },
   "files": {
@@ -2696,13 +2917,13 @@
     "index.apple-touch-icon.png": "sha256:853f4cdc628eef4ff1dad084a011565f7325873b745e7707533c5e4046c059e8",
     "index.audio.position.worklet.js": "sha256:be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
     "index.audio.worklet.js": "sha256:5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-    "index.html": "sha256:afc553136f3cf2616f8aa9d0bc2dc415eb5f0e66228f3a04b0a14eace50c8dfd",
+    "index.html": "sha256:e712a532c30558e9494f9603962376278d0ac8425880d742c438758479768372",
     "index.icon.png": "sha256:a72fa8f228fedb1f6c26a3d752a57e74818029806d8c957aae859727a637d99d",
     "index.js": "sha256:cb28c2d8ffd8981888823f1b6d98cdec4e3e11adf209ad556c22878e6d51c63a",
     "index.manifest.json": "sha256:5d6d4093a6015e640dfd354f581aa4bc6f12d8e50ea65e8cccca809e2bd6107e",
     "index.offline.html": "sha256:b0a5d443e78f58717adac780bac91c1431bfa3b801c41f4707d507fb5ad2e47f",
     "index.png": "sha256:dc78cf86c906c5c17a7829b9ed6e635f2abe1b66c2a4a80979a02a65f739baa0",
-    "index.service.worker.js": "sha256:380e56392ff4ee2df952b3dc290686413beb4613694c0218b109ed976b788636",
+    "index.service.worker.js": "sha256:a2bd41ce433c1d3d52f68eb1e16c584545e0a786e51274c32389c1578108b6ce",
     "open-source-licenses.html": "sha256:68be5e4c66116c05fbe449a8e7f4e6896d6b6bb92faee49b53635d3a12241ebb",
     "share/50b9e3238b4ce8becd44a5ce13927aeaf3b74bdf7c68abe005b4dfed86d89182.png": "sha256:50b9e3238b4ce8becd44a5ce13927aeaf3b74bdf7c68abe005b4dfed86d89182"
   }

@@ -48,3 +48,10 @@ dist/
 /assets/**/*.woff2
 .manus-game-tools/
 .manus-logs/
+# Manifest-hydrated 3D models
+/assets/**/*.[gG][lL][bB]
+/assets/**/*.[gG][lL][tT][fF]
+/assets/**/*.[oO][bB][jJ]
+/assets/**/*.[fF][bB][xX]
+/assets/**/*.[bB][lL][eE][nN][dD]
+/assets/**/*.[dD][aA][eE]

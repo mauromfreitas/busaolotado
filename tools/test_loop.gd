@@ -4,7 +4,7 @@ func _init() -> void:
     change_scene_to_file("res://scenes/main.tscn")
     while current_scene == null:
         await process_frame
-    var game = current_scene
+    var game = current_scene.get_node("GameCanvas/GameUI")
     var failures := []
     for level_id in range(1, 4):
         game.start_level(level_id)

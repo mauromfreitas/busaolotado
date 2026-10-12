@@ -19,6 +19,7 @@ const PURPLE := Color("#A88BDB")
 const GREEN := Color("#69C28B")
 const ORANGE := Color("#F49B59")
 const GRID_LINE := Color("#8AB9C5")
+const USE_3D_GAME := true
 
 var screen := "home"
 var level_db: Array = []
@@ -178,7 +179,8 @@ func _rounded_panel(x: float, y: float, w: float, h: float, color := PANEL, bord
         _outline(_rect(x, y, w, h), border, 2.0)
 
 func _draw() -> void:
-    _fill(Rect2(Vector2.ZERO, get_viewport_rect().size), BG)
+    if screen != "game" or not USE_3D_GAME:
+        _fill(Rect2(Vector2.ZERO, get_viewport_rect().size), BG)
     if screen == "home":
         _draw_home()
     elif screen == "map":
@@ -379,30 +381,35 @@ func _draw_city_strip() -> void:
 
 func _draw_game() -> void:
     _top_bar("RUA %02d" % current_level, true)
-    _draw_city_strip()
+    if not USE_3D_GAME:
+        _draw_city_strip()
     _text("DIFÍCIL" if _current_is_hard() else "CALMA", 24, 77, 11, SUN if _current_is_hard() else MINT)
-    for i in range(slot_count):
-        var x := 22.0 + float(i) * (346.0 / float(max(slot_count, 1)))
-        var w := 58.0 if slot_count <= 5 else 49.0
-        _draw_bay(x, 100, w, 64, i < parked.size())
-        if i < parked.size():
-            _draw_parked_bus(parked[i], x, 100, w, 64)
-    # Sidewalk queue: people, not dots.
-    _rounded_panel(22, 185, 346, 62, Color("#C9C1B4"), Color("#F4E8D6"))
-    draw_line(_ui(Vector2(30, 238)), _ui(Vector2(360, 238)), Color("#A39A8D"), 2 * _viewport_scale())
-    var shown: int = mini(8, queue.size())
-    for i in range(shown):
-        var qx := 44.0 + float(i) * 39.0
-        var c := _color_for_name(str(queue[i]))
-        var bounce := 0.0
-        if i == 0 and boarding_time > 0.0:
-            bounce = sin((0.28 - boarding_time) * 28.0) * 7.0
-        _draw_person(qx, 226, c, 0.85, bounce)
-    if queue.is_empty():
-        _center("rua vazia", 22, 221, 346, 12, Color("#4A676C"))
-    _draw_board()
+    if not USE_3D_GAME:
+        for i in range(slot_count):
+            var x := 22.0 + float(i) * (346.0 / float(max(slot_count, 1)))
+            var w := 58.0 if slot_count <= 5 else 49.0
+            _draw_bay(x, 100, w, 64, i < parked.size())
+            if i < parked.size():
+                _draw_parked_bus(parked[i], x, 100, w, 64)
+    if not USE_3D_GAME:
+        # Sidewalk queue: people, not dots.
+        _rounded_panel(22, 185, 346, 62, Color("#C9C1B4"), Color("#F4E8D6"))
+        draw_line(_ui(Vector2(30, 238)), _ui(Vector2(360, 238)), Color("#A39A8D"), 2 * _viewport_scale())
+        var shown: int = mini(8, queue.size())
+        for i in range(shown):
+            var qx := 44.0 + float(i) * 39.0
+            var c := _color_for_name(str(queue[i]))
+            var bounce := 0.0
+            if i == 0 and boarding_time > 0.0:
+                bounce = sin((0.28 - boarding_time) * 28.0) * 7.0
+            _draw_person(qx, 226, c, 0.85, bounce)
+        if queue.is_empty():
+            _center("rua vazia", 22, 221, 346, 12, Color("#4A676C"))
+    if not USE_3D_GAME:
+        _draw_board()
     _draw_powerups()
-    _draw_boarding_visuals()
+    if not USE_3D_GAME:
+        _draw_boarding_visuals()
     if current_level <= 3 and not buses.is_empty() and motion_elapsed <= 0.0:
         var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 260.0)
         var target: Dictionary = buses[0]

@@ -99,7 +99,8 @@ func _init() -> void:
     camera.look_at_from_position(camera.position, Vector3(0, 0, 0), Vector3.UP)
     root.add_child(camera)
     camera.current = true
-    adopt(root, root)
+    for child in root.get_children():
+        adopt(root, child)
     var packed := PackedScene.new()
     packed.pack(root)
     ResourceSaver.save(packed, OUT)
