@@ -14,6 +14,14 @@
     "doctor": "node scripts/manus/runtime-command.cjs ./doctor.mjs",
     "check": "node scripts/manus/runtime-command.cjs ./verify.mjs",
     "inspect": "node scripts/manus/runtime-command.cjs ./inspect-file.mjs",
-    "assets:report": "node scripts/manus/runtime-command.cjs ./asset-provenance.mjs"
+    "assets:report": "node scripts/manus/runtime-command.cjs ./asset-provenance.mjs",
+    "build:three": "node tools/build_three.mjs",
+    "build:three:shell": "node tools/build_three_shell.mjs"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

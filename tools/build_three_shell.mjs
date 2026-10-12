@@ -1,0 +1,23 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
+import { build } from 'esbuild';
+import { resolve } from 'node:path';
+
+const root = resolve(new URL('..', import.meta.url).pathname);
+const htmlPath = resolve(root, 'web/three/index.html');
+const appPath = resolve(root, 'web/three/app.js');
+const threeEntry = resolve(root, 'tools/three_global_entry.js');
+const levelsPath = resolve(root, 'data/levels/levels.json');
+const outPath = resolve(root, 'ui/web/three_shell.html');
+let html = await readFile(htmlPath, 'utf8');
+let app = await readFile(appPath, 'utf8');
+const bundle = await build({entryPoints:[threeEntry],bundle:true,format:'esm',minify:true,write:false});
+const threeModule = Buffer.from(bundle.outputFiles[0].text);
+const threeDataUrl = `data:text/javascript;base64,${Buffer.from(threeModule).toString('base64')}`;
+const levels = await readFile(levelsPath, 'utf8');
+app = app.replace("import * as THREE from './three.module.js';", 'const THREE = window.THREE;');
+app = app.replace("fetch('./levels.json').then(r=>r.json()).then(d=>{levels=d.levels;});", `Promise.resolve(${levels}).then(d=>{levels=d.levels;});`).replaceAll('</script>', '<\\/script>');
+html = html.replace(/\s*<script type="module" src="\.\/app\.js"><\/script>/, '');
+html = html.replace('</body>', `<script type="module">window.THREE = (await import('${threeDataUrl}')).THREE;${app}</script></body>`);
+await writeFile(outPath, html);
+console.log(`Three.js shell generated: ${outPath} (${(html.length/1024).toFixed(1)} KiB)`);
