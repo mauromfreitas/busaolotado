@@ -4,21 +4,21 @@ const BASE_SIZE := Vector2(390, 844)
 const SAVE_PATH := "user://busaolotado_save.json"
 const LEVEL_PATH := "res://data/levels/levels.json"
 
-const BG := Color("#081F2B")
-const PANEL := Color("#10394A")
-const PANEL_2 := Color("#15495A")
-const CREAM := Color("#FFF8E7")
-const MUTED := Color("#A9C4C9")
+const BG := Color("#DCEBF0")
+const PANEL := Color("#C8E1E8")
+const PANEL_2 := Color("#A8D2DF")
+const CREAM := Color("#173646")
+const MUTED := Color("#58717A")
 const CORAL := Color("#FF715B")
 const SUN := Color("#FFD166")
-const MINT := Color("#58D6B1")
+const MINT := Color("#2EAD9A")
 const RED := Color("#F26B5B")
 const BLUE := Color("#48A9D9")
 const YELLOW := Color("#F3C969")
 const PURPLE := Color("#A88BDB")
 const GREEN := Color("#69C28B")
 const ORANGE := Color("#F49B59")
-const GRID_LINE := Color("#24596A")
+const GRID_LINE := Color("#8AB9C5")
 
 var screen := "home"
 var level_db: Array = []
@@ -298,7 +298,7 @@ func _draw_home() -> void:
     _icon_button(200, 494, 76, "store", "LOJA")
     _icon_button(288, 494, 78, "settings", "AJUSTES")
     _icon_button(24, 578, 76, "account", "ENTRAR")
-    _rounded_panel(112, 578, 254, 58, Color("#0D2E3B"))
+    _rounded_panel(112, 578, 254, 58, PANEL)
     _text("Convidado", 132, 603, 14, CREAM)
     _text("nível %02d / 30" % int(progress["unlocked"]), 132, 623, 12, MUTED)
 
@@ -345,8 +345,41 @@ func _top_bar(title: String, back := false) -> void:
         _draw_button(18, 18, 48, 42, "VOLTAR", PANEL_2, CREAM, Color("#2B6573"), 9)
     _text(title, 78 if back else 24, 45, 18, CREAM)
     _draw_coin_pill(254, 20)
+
+func _draw_city_strip() -> void:
+    _rounded_panel(18, 82, 354, 184, Color("#A8D9EA"), Color("#FFFFFF"))
+    # Little city blocks behind the puzzle, with toy-like windows and depth.
+    var buildings := [[30.0, 118.0, 45.0, 50.0, "#F6C96A"], [82.0, 101.0, 54.0, 67.0, "#F38A73"], [143.0, 126.0, 48.0, 42.0, "#BDA9E8"], [198.0, 106.0, 58.0, 62.0, "#73C4C7"], [263.0, 116.0, 66.0, 52.0, "#F2A27D"]]
+    for building in buildings:
+        var bx: float = building[0]
+        var by: float = building[1]
+        var bw: float = building[2]
+        var bh: float = building[3]
+        var bc: Color = Color(building[4])
+        _fill(_rect(bx + 3, by + 4, bw, bh), Color(0, 0, 0, 0.12))
+        _fill(_rect(bx, by, bw, bh), bc)
+        _fill(_rect(bx + 4, by + 4, bw - 8, 5), bc.lightened(0.2))
+        for wx in range(2):
+            for wy in range(2):
+                _fill(_rect(bx + 9 + float(wx) * 18.0, by + 17 + float(wy) * 17.0, 8, 7), Color("#FFF2B6"))
+    # Road, curb and crosswalks.
+    _fill(_rect(18, 166, 354, 48), Color("#879BA2"))
+    draw_line(_ui(Vector2(18, 166)), _ui(Vector2(372, 166)), Color("#FFFFFF"), 3 * _viewport_scale())
+    draw_line(_ui(Vector2(18, 214)), _ui(Vector2(372, 214)), Color("#F7E1A1"), 4 * _viewport_scale())
+    for stripe_x in [82.0, 105.0, 128.0, 151.0, 174.0]:
+        draw_line(_ui(Vector2(stripe_x, 173)), _ui(Vector2(stripe_x + 12, 205)), Color("#EAF0F0"), 5 * _viewport_scale())
+    _fill(_rect(18, 214, 354, 52), Color("#F0E8D9"))
+    draw_line(_ui(Vector2(18, 217)), _ui(Vector2(372, 217)), Color("#FFFFFF"), 3 * _viewport_scale())
+    # Two rounded trees frame the street.
+    for tree_x in [40.0, 340.0]:
+        draw_line(_ui(Vector2(tree_x, 152)), _ui(Vector2(tree_x, 178)), Color("#8B5C3A"), 6 * _viewport_scale())
+        draw_circle(_ui(Vector2(tree_x - 9, 151)), 13 * _viewport_scale(), Color("#52B879"))
+        draw_circle(_ui(Vector2(tree_x + 7, 148)), 16 * _viewport_scale(), Color("#6CCD83"))
+        draw_circle(_ui(Vector2(tree_x + 18, 156)), 11 * _viewport_scale(), Color("#3FA866"))
+
 func _draw_game() -> void:
     _top_bar("RUA %02d" % current_level, true)
+    _draw_city_strip()
     _text("DIFÍCIL" if _current_is_hard() else "CALMA", 24, 77, 11, SUN if _current_is_hard() else MINT)
     for i in range(slot_count):
         var x := 22.0 + float(i) * (346.0 / float(max(slot_count, 1)))
@@ -382,10 +415,11 @@ func _draw_board() -> void:
     var cell := _cell_size()
     var ox := 22.0
     var oy := 316.0
-    # Asphalt lot with curb, lane marks and no visible logic grid.
-    _rounded_panel(18, 278, 354, 372, Color("#5B666B"), Color("#B6C0BC"))
-    draw_line(_ui(Vector2(24, 310)), _ui(Vector2(366, 310)), Color("#EDE9DF"), 3 * _viewport_scale())
-    draw_line(_ui(Vector2(24, 645)), _ui(Vector2(366, 645)), Color("#EDE9DF"), 3 * _viewport_scale())
+    # Light-blue toy plaza inspired by a tabletop city board; logic grid stays hidden.
+    _rounded_panel(18, 278, 354, 372, Color("#9ED5E5"), Color("#FFFFFF"))
+    _rounded_panel(24, 290, 342, 348, Color("#D8EFF2"), Color("#B7DFE8"))
+    draw_line(_ui(Vector2(28, 310)), _ui(Vector2(362, 310)), Color("#FFFFFF"), 3 * _viewport_scale())
+    draw_line(_ui(Vector2(28, 628)), _ui(Vector2(362, 628)), Color("#A9D5DF"), 3 * _viewport_scale())
     for lane_y in range(grid_h):
         if lane_y % 2 == 0:
             var y := oy + float(lane_y) * cell + cell * 0.5
@@ -463,7 +497,8 @@ func _draw_bus_shape(bus: Dictionary, x: float, y: float, bw: float, bh: float, 
     if bool(bus.get("hidden", false)) and not bool(bus.get("revealed", false)):
         _center("?", x, y + bh * 0.64, bw, 16, Color("#24363B"))
 func _draw_bay(x: float, y: float, w: float, h: float, occupied: bool) -> void:
-    _fill(_rect(x, y, w - 4, h - 2), Color("#6D777B"))
+    _fill(_rect(x + 2, y + 4, w - 6, h - 1), Color(0, 0, 0, 0.12))
+    _fill(_rect(x, y, w - 4, h - 2), Color("#E8F4F3"))
     draw_line(_ui(Vector2(x + 2, y + 2)), _ui(Vector2(x + w - 8, y + 2)), SUN, 3 * _viewport_scale())
     draw_line(_ui(Vector2(x + 2, y + h - 3)), _ui(Vector2(x + w - 8, y + h - 3)), SUN, 3 * _viewport_scale())
     if not occupied:
@@ -485,8 +520,8 @@ func _draw_powerups() -> void:
     _draw_power_button(262, 744, 106, "tow", int(p.get("tow", 0)), "GUINCHO")
 
 func _draw_power_button(x: float, y: float, w: float, icon_name: String, count: int, label: String) -> void:
-    _rounded_panel(x, y, w, 60, CORAL if icon_name == "tow" and tow_mode else Color("#285E68"), Color("#6EA7A5"))
-    _icon(icon_name, x + 12, y + 12, 25, CREAM)
+    _rounded_panel(x, y, w, 60, CORAL if icon_name == "tow" and tow_mode else Color("#EAF6F5"), Color("#8CBFC7"))
+    _icon(icon_name, x + 12, y + 12, 25, CORAL if icon_name == "tow" and tow_mode else CREAM)
     _text(label, x + 43, y + 28, 11, CREAM)
     _center(str(count), x, y + 54, w, 10, SUN)
 func _draw_result() -> void:
